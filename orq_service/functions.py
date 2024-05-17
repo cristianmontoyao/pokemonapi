@@ -67,12 +67,15 @@ def get_pokemon_by_city_temp(longitude, latitude):
         return {"code": 500, "details": "internal server error"}
 
 def authenticate_sesion(authorization_token):
-    url = "http://127.0.0.1:8001/auth/v1/validatetoken"
+    url = os.getenv("IAM_AUTHORIZATION", "http://127.0.0.1:8001/auth/v1/validatetoken")
     data = {"authorization": authorization_token}
+    print("\n\n\ntoken a validar:")
+    print(data)
     response = requests.post(url, json=data)
     result = response.json()
-
-    if result["status"]:
+    print("\n\n\nrespuesta de validacion de token:")
+    print(result)
+    if result["status"] == "true":
         return result
         #logger
     else:

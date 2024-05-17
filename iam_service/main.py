@@ -13,6 +13,7 @@ app = FastAPI()
 @app.post("/auth/v1/registeruser")
 def register_new_user(item: RegisterItem):
     item_dict = item.dict()
+    print("item_dict")
     log = {
         "user_id": item_dict["username"],
         "action":"register user"
@@ -72,6 +73,8 @@ def validate_token(item: TokenItem):
     token = item_dict["authorization"] 
     result = verify_token_jwt(token)
     print("*"*10)
+    print("Token recibido para validar")
+    print(token)
     print(result)
     print("*"*10)
     log = {
@@ -82,20 +85,24 @@ def validate_token(item: TokenItem):
         log["details"] = result["details"]
         logger.info("valid token", extra=dict(log))
         response = {"code": 200, "status":True, "details": result["details"]}
+        print(response)
         return JSONResponse(content=response, status_code=200)
     if result["code"] == 400:
         log["details"] = result["details"] + " - " + token
         logger.info("password wrong", extra=dict(log))
         response = {"code": 400, "status":False,  "details": result["details"]}
+        print(response)
         return JSONResponse(content=response, status_code=400)
     if result["code"] == 401:
         log["details"] = result["details"] + " - " + token
         print(log)
         logger.info("user does not exist", extra=dict(log))
         response = {"code": 401, "status":False,  "details": result["details"]}
+        print(response)
         return JSONResponse(content=response, status_code=401)
     log["details"]= "server internal error" + " - " + token
     logger.info("server internal error", extra=dict(log))
     response = {"code": 500,  "status":False, "details": "servir internal error"}
+    print(response)
     return JSONResponse(content=response, status_code=500)
 

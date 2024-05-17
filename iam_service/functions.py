@@ -39,6 +39,8 @@ def set_new_register_user(user_data):
         return response
     except Exception as e:
         response = {"details": "internal server error", "code": 500}
+        print(Exception)
+        print(e)
         return response    
 
 def generate_password_hash(password):
@@ -82,7 +84,8 @@ def authenticating_user(username, password):
         except VerifyMismatchError:
             response = {"details": "failed authentication", "code": 401}
             return response
-    except:
+    except Exception as e:
+        print(e)
         response = {"details": "bad request", "code": 400}
         return response    
 

@@ -24,6 +24,7 @@ def query_set_new_user(register):
         return response
     except Exception as e:
         response = {"details": "internal server error", "code": 500}
+        print(e)
         return response
 
 

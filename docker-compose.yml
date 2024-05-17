@@ -14,12 +14,16 @@ services:
       - EXTERNAL_OFFSET_STR=&offset=
       - EXTERNAL_LIMIT=20
       - EXTERNAL_OFFSET=0
-      - POKEMON_SERVER_NAME=mongodb://localhost:27017/
+      - POKEMON_SERVER_NAME=mongo:27017/
       - POKEMON_DB_NAME=pokemonWorld
       - POKEMON_COLLECTION_NAME=pokemondata
+      - POKEMON_DB_USER=root
+      - POKEMON_DB_PASSWORD=W9KTR@H5UvIxgklVWJH1_JuYw9XIuAIpBg-lPgs88oPaVwImz3B7G
       - DATABASE_CHECK_SECONDS_TIME=20
     ports:
-      - "8005:8000"
+      - "8002:8002"
+    networks:
+      - pokemon-network
 
   orq_service:
     container_name: orq_service
@@ -29,14 +33,23 @@ services:
     env_file:
       - .env
     environment:
-      - POKEMON_SERVER_NAME=mongodb://localhost:27017/
+      - POKEMON_SERVER_NAME=mongo:27017/
       - POKEMON_DB_NAME=pokemonWorld
       - POKEMON_COLLECTION_NAME=pokemondata
-      - LOGGER_SERVER_NAME=mongodb://localhost:27017/
+      - LOGGER_SERVER_NAME=mongodb://mongo:27017/
       - LOGGER_DB_NAME=pokemonWorld
       - LOGGER_COLLECTION_NAME=pokemon_logs
+      - LOGGER_DB_USER=root
+      - LOGGER_DB_PASSWORD=W9KTR@H5UvIxgklVWJH1_JuYw9XIuAIpBg-lPgs88oPaVwImz3B7G
+      - IAM_AUTHORIZATION=http://iam_service:8001/auth/v1/validatetoken
+      - WEATHER_INTERNAL_URL=http://emb_weather:8003
+      - WEATHER_INTERNAL_URL1=/weathers/v1/weather/getweatherbycoordinate
+      - WEATHER_INTERNAL_URL2=?latitude=
+      - WEATHER_INTERNAL_URL3=&longitude=
     ports:
-      - "8002:8000"
+      - "8000:8000"
+    networks:
+      - pokemon-network
 
   iam_service:
     container_name: iam_service
@@ -47,14 +60,20 @@ services:
       - .env
     environment:
       - SECRET_KEY='lkhj_!$tr56&2578dDDq@tyK1L1_!$tr56&2578dDDq@tyJJ1L1'
-      - IAM_SERVER_NAME=mongodb://localhost:27017/
+      - IAM_SERVER_NAME=mongo:27017/
       - IAM_DB_NAME=iam
       - IAM_COLLECTION_NAME=userdata
-      - LOGGER_SERVER_NAME=mongodb://localhost:27017/
+      - IAM_DB_USER=root
+      - IAM_DB_PASSWORD=W9KTR@H5UvIxgklVWJH1_JuYw9XIuAIpBg-lPgs88oPaVwImz3B7G
+      - LOGGER_SERVER_NAME=mongodb://mongo:27017
       - LOGGER_DB_NAME=iam
       - LOGGER_COLLECTION_NAME=iam_logs
+      - LOGGER_DB_USER=root
+      - LOGGER_DB_PASSWORD=W9KTR@H5UvIxgklVWJH1_JuYw9XIuAIpBg-lPgs88oPaVwImz3B7G
     ports:
-      - "8001:8000"
+      - "8001:8001"
+    networks:
+      - pokemon-network
 
   emb_weather:
     container_name: emb_weather_service
@@ -69,5 +88,22 @@ services:
       - EXTERNAL_URL2=&longitude=
       - EXTERNAL_URL3=&current_weather=true
     ports:
-      - "8000:8000"
+      - "8003:8003"
+    networks:
+      - pokemon-network 
+    
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: W9KTR@H5UvIxgklVWJH1_JuYw9XIuAIpBg-lPgs88oPaVwImz3B7G
+    ports:
+      - "27017:27017"
+    networks:
+      - pokemon-network
+
+networks:
+  pokemon-network:
+    driver: bridge
  

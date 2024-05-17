@@ -5,11 +5,11 @@ import datetime
 
 from config import *
 
-# Crear un manejador de logging para MongoDB
-class MongoDBHandler(logging.Handler):
-    def __init__(self, db_name, collection_name, uri=logger_server_name):
-        super().__init__()
-        self.client = MongoClient(uri)
+
+class MongoHandler(logging.Handler):
+    def __init__(self, db_uri, db_name, collection_name, username, password):
+        logging.Handler.__init__(self)
+        self.client = MongoClient(db_uri, username=username, password=password)
         self.db = self.client[db_name]
         self.collection = self.db[collection_name]
 
@@ -25,18 +25,16 @@ class MongoDBHandler(logging.Handler):
         }
         self.collection.insert_one(log_doc)
 
-# Configuración del logger
-logger = logging.getLogger('pokemon_logger')
-logger.setLevel(logging.INFO)  # Configurar el nivel mínimo de log
+def get_mongo_logger(db_uri, db_name, collection_name, username, password):
+    logger = logging.getLogger("iam_Logger")
+    logger.setLevel(logging.DEBUG)  # O ajusta al nivel que necesites
 
-# Crear manejador para MongoDB
-mongo_handler = MongoDBHandler(db_name=logger_db_name, collection_name=logger_collection_name)
-mongo_handler.setLevel(logging.DEBUG)
+    mongo_handler = MongoHandler(db_uri, db_name, collection_name, username, password)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    mongo_handler.setFormatter(formatter)
 
-# Crear un formato y añadirlo a los manejadores
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(funcName)s - %(levelname)s - %(message)s - user_id=%(user_id)s - action=%(action)s - details=%(details)s')
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(funcName)s - %(levelname)s - user_id=%(user_id)s - action=%(action)s - details=%(details)s')
-#mongo_handler.setFormatter(formatter)
+    logger.addHandler(mongo_handler)
+    return logger
 
-# Añadir los manejadores al logger
-logger.addHandler(mongo_handler)
+# Obtener el logger
+logger = get_mongo_logger(logger_server_name, logger_db_name, logger_collection_name, logger_db_user, logger_db_password)

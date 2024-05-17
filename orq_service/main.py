@@ -9,9 +9,9 @@ from logger import *
 app = FastAPI()
 
 @app.post("/pokemons/v1/pokemon/gettypebyname")
-def get_type_by_name(item: Item, authorization: str = Header(None)):
+def get_type_by_name(item: Item):
     item_dict = item.dict()
-    item_dict["authorization"] = authorization
+    authorization = item_dict["authorization"]
     authentication_status = authenticate_sesion(authorization)
     log = {
         "user_id": item_dict["authorization"],
@@ -41,11 +41,14 @@ def get_type_by_name(item: Item, authorization: str = Header(None)):
     logger.info("unauthorized", extra=dict(log))
     return JSONResponse(content="unauthorized", status_code=401)
 
+
 @app.post("/pokemons/v1/pokemon/getnamebytype")
-def get_longest_name_by_type(item: TypeItem, authorization: str = Header(None)):
+def get_longest_name_by_type(item: TypeItem):
     item_dict = item.dict()
-    item_dict["authorization"] = authorization 
+    authorization = item_dict["authorization"]
     authentication_status = authenticate_sesion(authorization)
+    print("token capturado del header:")
+    print(authorization)
     log = {
             "user_id": item_dict["authorization"],
             "action":"get longest name by type"
@@ -76,9 +79,9 @@ def get_longest_name_by_type(item: TypeItem, authorization: str = Header(None)):
 
 
 @app.post("/pokemons/v1/pokemon/getrandombytype")
-def get_random_by_type(item: TypeItem, authorization: str = Header(None)):
+def get_random_by_type(item: TypeItem):
     item_dict = item.dict()
-    item_dict["authorization"] = authorization
+    authorization = item_dict["authorization"]
     authentication_status = authenticate_sesion(authorization)
     log = {
             "user_id": item_dict["authorization"],
@@ -109,9 +112,9 @@ def get_random_by_type(item: TypeItem, authorization: str = Header(None)):
     return JSONResponse(content="unauthorized", status_code=401)
 
 @app.post("/pokemons/v1/pokemon/getrandombycityweather")
-def get_random_by_city_weather(item: GeolocationItem, authorization: str = Header(None)):
+def get_random_by_city_weather(item: GeolocationItem):
     item_dict = item.dict()
-    item_dict["authorization"] = authorization
+    authorization = item_dict["authorization"]
     authentication_status = authenticate_sesion(authorization)
     log = {
             "user_id": item_dict["authorization"],
@@ -144,7 +147,9 @@ def get_random_by_city_weather(item: GeolocationItem, authorization: str = Heade
     return JSONResponse(content="unauthorized", status_code=401)
 
 @app.post("/pokemons/v1/pokemon/getpokemonlist")
-def get_pokemon_list(authorization: str = Header(None)):
+def get_pokemon_list(item:EmptyItem):
+    item_dict = item.dict()
+    authorization = item_dict["authorization"]
     authentication_status = authenticate_sesion(authorization)
     log = {
             "user_id": item_dict["authorization"],

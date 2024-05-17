@@ -6,4 +6,4 @@ WORKDIR /app
 COPY . /app
 RUN pip install --no-cache-dir --default-timeout=100 -r requirements.txt
 
-CMD ["python", ".\main.py"]
+CMD ["python", "main.py"]
