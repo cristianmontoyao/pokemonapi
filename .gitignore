@@ -1,0 +1,7 @@
+# Ignorar archivos de entorno de desarrollo
+.env
+
+# Ignorar la carpetas
+app/
+BK/
+pokenv/

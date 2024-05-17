@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  emb_pokemon:
+    container_name: emb_pokemon_service
+    build:
+      context: ./emb_pokemon
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - EXTERNAL_URL=https://pokeapi.co/api/v2/pokemon
+      - EXTERNAL_LIMIT_STR=?limit=
+      - EXTERNAL_OFFSET_STR=&offset=
+      - EXTERNAL_LIMIT=20
+      - EXTERNAL_OFFSET=0
+      - POKEMON_SERVER_NAME=mongodb://localhost:27017/
+      - POKEMON_DB_NAME=pokemonWorld
+      - POKEMON_COLLECTION_NAME=pokemondata
+      - DATABASE_CHECK_SECONDS_TIME=20
+    ports:
+      - "8005:8000"
+
+  orq_service:
+    container_name: orq_service
+    build:
+      context: ./orq_service
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - POKEMON_SERVER_NAME=mongodb://localhost:27017/
+      - POKEMON_DB_NAME=pokemonWorld
+      - POKEMON_COLLECTION_NAME=pokemondata
+      - LOGGER_SERVER_NAME=mongodb://localhost:27017/
+      - LOGGER_DB_NAME=pokemonWorld
+      - LOGGER_COLLECTION_NAME=pokemon_logs
+    ports:
+      - "8002:8000"
+
+  iam_service:
+    container_name: iam_service
+    build:
+      context: ./iam_service
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - SECRET_KEY='lkhj_!$tr56&2578dDDq@tyK1L1_!$tr56&2578dDDq@tyJJ1L1'
+      - IAM_SERVER_NAME=mongodb://localhost:27017/
+      - IAM_DB_NAME=iam
+      - IAM_COLLECTION_NAME=userdata
+      - LOGGER_SERVER_NAME=mongodb://localhost:27017/
+      - LOGGER_DB_NAME=iam
+      - LOGGER_COLLECTION_NAME=iam_logs
+    ports:
+      - "8001:8000"
+
+  emb_weather:
+    container_name: emb_weather_service
+    build:
+      context: ./emb_weather
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - EXTERNAL_URL=https://api.open-meteo.com/v1/forecast
+      - EXTERNAL_URL1=?latitude=
+      - EXTERNAL_URL2=&longitude=
+      - EXTERNAL_URL3=&current_weather=true
+    ports:
+      - "8000:8000"
+ 
