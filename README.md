@@ -5,9 +5,9 @@
 
 Los Pokémon son una clase de criaturas inspiradas en animales reales, insectos, objetos, plantas o criaturas mitológicas. Cada uno de ellos tiene uno o varios tipos (fuego, agua, hielo, entre otros) y según su tipo son capaces de realizar diferentes habilidades.
 
+![Diagrama](https://github.com/cristianmontoyao/pokemonapi/blob/main/Diagrama.png)
 
 Api escrita en Python, utilizando FastAPI y otras librerías de apoyo
-
 
 ## END POINTS 
 
