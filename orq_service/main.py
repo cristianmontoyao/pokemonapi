@@ -152,19 +152,3 @@ def get_random_by_city_weather(item: GeolocationItem):
     log["details"] = "unauthorized"
     logger.info("unauthorized", extra=dict(log))
     return JSONResponse(content="unauthorized", status_code=401)
-
-@app.post("/pokemons/v1/pokemon/getpokemonlist",tags=["by name"])
-def get_pokemon_list(item:EmptyItem):
-    '''Obtener la lisra de pokemons'''
-    item_dict = item.dict()
-    authorization = item_dict["authorization"]
-    authentication_status = authenticate_sesion(authorization)
-    log = {
-            "user_id": item_dict["authorization"],
-            "action":"get random by city weather"
-        }
-    if authentication_status["status"]:
-        return query_get_all_pokemon_names()
-    log["details"] = "unauthorized"
-    logger.info("unauthorized", extra=dict(log))
-    return JSONResponse(content="unauthorized", status_code=401)
