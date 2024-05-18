@@ -85,6 +85,9 @@ Api escrita en Python, utilizando FastAPI y otras librerías de apoyo
 - El consumo de las API Pokemon está sujeto a la autenticación.
 - Se genera trazabilidad de uso
 
+## DIAGRAMA DE SECUENCIA
+![Diagrama](https://github.com/cristianmontoyao/pokemonapi/blob/main/DiagramaF.png)
+
 ## INSTALACIÓN
 
 Clonar repositorio
