@@ -1,7 +1,10 @@
+'''Interacciones con bd'''
+
 import random
 from config import *
 
 def query_get_type_by_name(pokemon_name):
+    '''Query a db filtrando por el nombre del pokemon'''
     pokemon_data ={}
     pipeline = [
     {
@@ -31,6 +34,7 @@ def query_get_type_by_name(pokemon_name):
 
 
 def query_get_longest_name_by_type(type_name):
+    '''Query a bd filtrando por el tipo'''
     pokemon_data ={}
     pipeline = [
     {
@@ -57,7 +61,6 @@ def query_get_longest_name_by_type(type_name):
         }
     }
     ]
-    
     try:
         result = list(collectionpk.aggregate(pipeline))
         data = result[0]
@@ -71,6 +74,7 @@ def query_get_longest_name_by_type(type_name):
         return pokemon_data    
 
 def query_get_random_by_type(type_name):
+    '''Query bd para obtener pokemon aleatorio por nombre'''
     pokemon_data ={}
     pipeline = [
     {
@@ -99,8 +103,8 @@ def query_get_random_by_type(type_name):
         return pokemon_data 
 
 
-
 def query_get_random_by_city_weather(type_name):
+    '''Query a bd obteniendo un pokemon dado el tipo según la temperatura de una ciudad'''
     pokemon_data ={}
     pipeline = [
     {
@@ -138,8 +142,8 @@ def query_get_random_by_city_weather(type_name):
         return pokemon_data 
 
 
-
 def query_get_all_pokemon_names():
+    '''Query devuelve el listado de pokemons'''
     pipeline = [
     {
         '$project': {
@@ -163,7 +167,6 @@ def query_get_all_pokemon_names():
     result = {}
     for pokemon in pokemon_list:
         result[pokemon["name"]] = pokemon["type"]
-    
     all_types = [value for value_list in result.values() for value in value_list]
 
     # Obtener los valores únicos utilizando un conjunto

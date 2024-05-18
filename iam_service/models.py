@@ -1,11 +1,11 @@
-from pydantic import BaseModel
-from typing import Dict, List, Optional
+'''Listado de modelos de datos'''
+from pydantic import BaseModel, EmailStr
+from typing import Dict, Optional
 
 class RegisterItem(BaseModel):
     username: str
     password: str
-    mail: str
-#agregar cómo validar el correo elctrónico
+    mail: EmailStr
 
 class AuthItem(BaseModel):
     username: str
@@ -21,20 +21,13 @@ class TraceItem(BaseModel):
     action: str
     details: str
 
-
 class ResponseItem(BaseModel):
     id_transacction: str
     details: str
     status: str
 
-
-
 class LogItem(BaseModel):
     user_id: Optional[str] = None
     action: Optional[str] = None
     details: Dict[str, str] = None
-
-
-    #register
-    #authtntication
     

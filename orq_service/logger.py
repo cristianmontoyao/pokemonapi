@@ -1,12 +1,13 @@
+'''Parametrización de looger asociado a BD Mongo'''
+
 import logging
-import pymongo
-from pymongo import MongoClient
 import datetime
+from pymongo import MongoClient
 
 from config import *
 
-
 class MongoHandler(logging.Handler):
+    '''Manejador de la conexión del logger hacia mongo'''
     def __init__(self, db_uri, db_name, collection_name, username, password):
         logging.Handler.__init__(self)
         self.client = MongoClient(db_uri, username=username, password=password)
@@ -26,6 +27,7 @@ class MongoHandler(logging.Handler):
         self.collection.insert_one(log_doc)
 
 def get_mongo_logger(db_uri, db_name, collection_name, username, password):
+    '''Definición del logger'''
     logger = logging.getLogger("iam_Logger")
     logger.setLevel(logging.DEBUG)  # O ajusta al nivel que necesites
 

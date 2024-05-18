@@ -1,14 +1,12 @@
+'''Funciones generales utilizadas en el servicio'''
+
 import os
-from dotenv import load_dotenv
 import requests
 from config import *
 from queryes import *
 
-
-load_dotenv()
-
-
 def get_temperature_by_city(longitude, latitude):
+    '''Obtener temperatura de ciudad basado en coordenadas'''
     url = os.getenv("WEATHER_INTERNAL_URL", "http://localhost:8003")
     url1 = os.getenv("WEATHER_INTERNAL_URL1", "/weathers/v1/weather/getweatherbycoordinate")
     url2 = os.getenv("WEATHER_INTERNAL_URL2", "?latitude=")
@@ -29,10 +27,10 @@ def get_temperature_by_city(longitude, latitude):
 
 
 def get_equivalent_type_by_temp(temperature):
-    print("TRANSFORMANDO TEMPERATURA A TIPO")
+    '''Equivalencia de tipo de pokemón según temperatura de ciudad'''
     equivalent_temp_table = {
         'fuego': {'name': 'fire', 'lower_limit': 30, 'upper_limit': 60},
-        'tierra': {'name': 'poison', 'lower_limit': 20, 'upper_limit': 30},
+        'tierra': {'name': 'ground', 'lower_limit': 20, 'upper_limit': 30},
         'normal': {'name': 'normal', 'lower_limit': 10, 'upper_limit': 20},
         'agua': {'name': 'water', 'lower_limit': 0, 'upper_limit': 10},
         'hielo': {'name': 'ice', 'lower_limit': -80, 'upper_limit': 0}
@@ -45,6 +43,7 @@ def get_equivalent_type_by_temp(temperature):
 
 
 def get_pokemon_by_city_temp(longitude, latitude):
+    '''Obtener un pokemon según la temperatura dela ciudad'''
     city_temperature = get_temperature_by_city(longitude, latitude)
     if city_temperature["temperature"]:
         pokemon_type = get_equivalent_type_by_temp(city_temperature["temperature"])
@@ -67,13 +66,11 @@ def get_pokemon_by_city_temp(longitude, latitude):
         return {"code": 500, "details": "internal server error"}
 
 def authenticate_sesion(authorization_token):
+    '''Verificar el token de autenticación enviado por el consumidor'''
     url = os.getenv("IAM_AUTHORIZATION", "http://127.0.0.1:8001/auth/v1/validatetoken")
     data = {"authorization": authorization_token}
-    print("\n\n\ntoken a validar:")
-    print(data)
     response = requests.post(url, json=data)
     result = response.json()
-    print("\n\n\nrespuesta de validacion de token:")
     print(result)
     if result["status"] == "true":
         return result
@@ -81,4 +78,3 @@ def authenticate_sesion(authorization_token):
     else:
         return result
         #logger
-

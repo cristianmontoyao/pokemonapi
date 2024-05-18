@@ -1,3 +1,5 @@
+'''Listado de modelos de datos'''
+
 from pydantic import BaseModel
 
 class Item(BaseModel):

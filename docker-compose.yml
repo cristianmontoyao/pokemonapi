@@ -36,6 +36,8 @@ services:
       - POKEMON_SERVER_NAME=mongo:27017/
       - POKEMON_DB_NAME=pokemonWorld
       - POKEMON_COLLECTION_NAME=pokemondata
+      - POKEMON_DB_USER=root
+      - POKEMON_DB_PASSWORD=W9KTR@H5UvIxgklVWJH1_JuYw9XIuAIpBg-lPgs88oPaVwImz3B7G
       - LOGGER_SERVER_NAME=mongodb://mongo:27017/
       - LOGGER_DB_NAME=pokemonWorld
       - LOGGER_COLLECTION_NAME=pokemon_logs

@@ -1,6 +1,8 @@
+'''Interacciones con bd'''
 from config import *
 
 def query_check_if_user_exist(username):
+    '''Verificar si usuario existe en db'''
     pipeline = [
     {
         '$match': {
@@ -17,6 +19,7 @@ def query_check_if_user_exist(username):
 
 
 def query_set_new_user(register):
+    '''Insertar nuevo usuario'''
     try:
         insert_result = iam_collection.insert_one(register)
         print("ID del documento insertado:", insert_result.inserted_id)
@@ -29,6 +32,7 @@ def query_set_new_user(register):
 
 
 def query_get_stored_password_hash(username):
+    '''Extraer has almacenado en bd para autenticación de consumidor'''
     pipeline = [
     {
         '$match': {

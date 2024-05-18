@@ -24,7 +24,7 @@ Api escrita en Python, utilizando FastAPI y otras librerías de apoyo
 | >= 0°C y < 10°C | Agua |
 | < 0°C | Hielo |
 
-# Controles de seguridad por diseño
+## Controles de seguridad por diseño
 
  ### Segmentación/Infraestructura
  - Aislar a nivel de conectividad los servicios de autenticación, de los de la API
@@ -53,12 +53,12 @@ Api escrita en Python, utilizando FastAPI y otras librerías de apoyo
 
 
 
-# SUPUESTOS
+## SUPUESTOS
 - Dado el entorno de despliegue, se utilizan variables de entorno para el almacenamiento de claves y constantes
 - Al ser la información Pokemon de dominio público, no es necesario aplicar cifrado de de información en reposo; sin embargo, en implementaciones de nube es buena práctica.
 - Las habilidades pokemón puedrían varian con el entrenamiento; sin embargo es considerada estática, por lo cual se realiza carga inicial de toda la información, monitoreando que la base de datos interna contenga la misma.
 
-# IMPLEMENTACIÓN
+## IMPLEMENTACIÓN
 - Se utiliza esquema de microservicios, dado que permiten ajuste según las necesidades sin afectar a los consumidores.
 - Se dividen las responsabilidades en 4 tipos: 
   - Orquestador: Receptor de solicitudes y lógica principal de la API.
@@ -67,10 +67,12 @@ Api escrita en Python, utilizando FastAPI y otras librerías de apoyo
   - IAM: Responsable de la autenticación y autorización de los consumidores.
 - Se propone esquema de despliegue en contenedores, permitiendo ajustar la capacidad de acuerdo con la demanda.
 
-# IAM
+## IAM
 - Es necesario que los consumidores se registren antes de poder hacer uso de la API.
 - En el registro el consumidor define el usuario y contraseña a utilizar, además proporciona el correo electrónico para actividades de recuperación de clave (no implementado).
 - La contraseña no es almacenada en base de datos, por lo cual se utiliza algoritmo criptográfico Argon2 para almacenar su hash.  Dadas las características del algoritmo, se puede almacenar el hash en vez de la contraseña.
+- La contraseña parametrizada por los consumidores debe ser compleja y contar con carcaterísticas como longitud superior 14 caracteres, estar conformada por letras mayúsculas y minúsculas, símbolos y números (no implementado).
+- Dado el tipo de información en la API, la contraseña puede vencer en tiempos superiores a 30 días (no implementado).
 - La base de datos del IAM es independiente a la de las APIs de negocio.
 - Se implementa trazabilidad en el registro y autenticación de consumidores.
 - El usuario es autenticado en 2 oportunidades:
@@ -85,7 +87,7 @@ Api escrita en Python, utilizando FastAPI y otras librerías de apoyo
 
 ## INSTALACIÓN
 
-clonar repositorio
+Clonar repositorio
 ```sh
 git clone https://github.com/cristianmontoyao/pokemonapi.git
 ```
@@ -94,23 +96,15 @@ Acceder a la carpeta descargada
 cd pokemonapi
 ```
 
-modificar las variables de entorno en el archivo docker-compose.yaml
+Modificar las variables de entorno en el archivo docker-compose.yaml
 
 ```sh
 docker-compose.yaml
 ```
 
-construir las imágenes
+Construir las imágenes
 ```sh
 docker-compose build
-```
-
-Si genera novedades en la instalación de dependencias, realizar la construcción individual
-```sh
-docker-compose build orq_service
-docker-compose build emb_pokemon
-docker-compose build iam_service
-docker-compose build emb_weather
 ```
 
 Desplegar los contenedores
@@ -122,81 +116,81 @@ docker-compose up
 
 Puede hacer uso de la documentación proporcionada por FastAPI o probar mediante el uso de Curl adjunto:
 
-Autenticación:
+### Autenticación:
 ```sh
-http://127.0.0.1:8001/docs
+http://localhost:8001/docs
 ```
 
-PokemonsAPI
+### PokemonsAPI
 ```sh
-http://127.0.0.1:8002/docs
+http://localhost:8000/docs
 ```
 ##### Registrar usuario
 ```sh
-curl -i -X POST \
-   -H "Content-Type:application/json" \
-   -d \
-'{
-"username":"user15",
-"password":"password",
-"mail":"mail@mail.com"
-}' \
- 'http://127.0.0.1:8001/auth/v1/registeruser'
+curl -X 'POST' \
+  'http://localhost:8001/auth/v1/registeruser' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "username": "user",
+  "password": "paswwword123",
+  "mail": "correo@correo.com"
+}'
 ```
 
 ##### Autenticar usuario
 ```sh
-curl -i -X POST \
-   -H "Content-Type:application/json" \
-   -d \
-'{
-"username":"user16",
-"password":"password"
-}' \
- 'http://127.0.0.1:8001/auth/v1/authenticate'
+curl -X 'POST' \
+  'http://localhost:8001/auth/v1/authenticate' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "username": "user",
+  "password": "paswwword123"
+}'
  ```
 ##### Obtener el tipo de Pokemón según su nombre
 ```sh
-curl -i -X POST \
-   -H "Content-Type:application/json" \
-   -H "Authorization:eYJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJiYWJhZTU1Zi00NzY5LTQ3NzMtODcxNS1mNjU5YThmMTVmODAiLCJleHAiOjE3MTU5MDYyMjJ9.r6MQf-eOXMF7Lea-cbExxcSk09Kaf5VBX1ob3O2V2uA" \
-   -d \
-'{
-"pokemon_name":"wartortle"
-}' \
- 'http://127.0.0.1:8002/pokemons/v1/pokemon/gettypebyname'
+curl -X 'POST' \
+  'http://localhost:8000/pokemons/v1/pokemon/gettypebyname' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIyYWJmMDA1MS01NWY2LTQ2NTMtYjNiNi1mYTI2OTFiMmY4MTMiLCJleHAiOjE3MTU5OTMwMjR9.vKivfZT1o2ar3WyMqDxvqwgZyjTYqYRIDo-hY4pniFs",
+  "pokemon_name": "wartortle"
+}'
  ```
 ### Obtener un Pokemon al azar de un tipo epecífico.
 ```sh
-curl -i -X POST \
-   -H "Content-Type:application/json" \
-   -H "Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJiYWJhZTU1Zi00NzY5LTQ3NzMtODcxNS1mNjU5YThmMTVmODAiLCJleHAiOjE3MTU5MjQyODh9.BEwRlTbitBffUJkj6GvkKvIaymsoRV4EkwsdOx0o84g" \
-   -d \
-'{
-"type_name":"poison"
-}' \
- 'http://127.0.0.1:8002/pokemons/v1/pokemon/getrandombytype'
+curl -X 'POST' \
+  'http://localhost:8000/pokemons/v1/pokemon/getrandombytype' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIyYWJmMDA1MS01NWY2LTQ2NTMtYjNiNi1mYTI2OTFiMmY4MTMiLCJleHAiOjE3MTU5OTMwMjR9.vKivfZT1o2ar3WyMqDxvqwgZyjTYqYRIDo-hY4pniFs",
+  "type_name": "water"
+}'
 ```
 ### Obtener un Pokemón con el nombre más largo de cierto tipo
 ```sh
-curl -i -X POST \
-   -H "Content-Type:application/json" \
-   -H "Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJiYWJhZTU1Zi00NzY5LTQ3NzMtODcxNS1mNjU5YThmMTVmODAiLCJleHAiOjE3MTU5MjQyODh9.BEwRlTbitBffUJkj6GvkKvIaymsoRV4EkwsdOx0o84g" \
-   -d \
-'{
-"type_name":"water"
-}' \
- 'http://127.0.0.1:8002/pokemons/v1/pokemon/getnamebytype'
+curl -X 'POST' \
+  'http://localhost:8000/pokemons/v1/pokemon/getnamebytype' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIyYWJmMDA1MS01NWY2LTQ2NTMtYjNiNi1mYTI2OTFiMmY4MTMiLCJleHAiOjE3MTU5OTMwMjR9.vKivfZT1o2ar3WyMqDxvqwgZyjTYqYRIDo-hY4pniFs",
+  "type_name": "water"
+}'
 ```
 ### Obtener un Pokemón al azar que contenga en su nombre alguna de las letras "i", "a" o "m", de acuerdo al clima actual de una ciudad dada en coordenadas (latitud y longitud)
 ```sh
-curl -i -X POST \
-   -H "Content-Type:application/json" \
-   -H "Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJiYWJhZTU1Zi00NzY5LTQ3NzMtODcxNS1mNjU5YThmMTVmODAiLCJleHAiOjE3MTU5MjQyODh9.BEwRlTbitBffUJkj6GvkKvIaymsoRV4EkwsdOx0o84g" \
-   -d \
-'{
+curl -X 'POST' \
+  'http://localhost:8000/pokemons/v1/pokemon/getrandombycityweather' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIyYWJmMDA1MS01NWY2LTQ2NTMtYjNiNi1mYTI2OTFiMmY4MTMiLCJleHAiOjE3MTU5OTMwMjR9.vKivfZT1o2ar3WyMqDxvqwgZyjTYqYRIDo-hY4pniFs",
 "latitude":4.5055,
 "longitude": -45.23
-}' \
- 'http://127.0.0.1:8002/pokemons/v1/pokemon/getrandombycityweather'
+}'
 ```

@@ -1,19 +1,23 @@
+'''funciones de entrada endpoints'''
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-
-import uuid
 
 from models import *
 from functions import *
 from queryes import *
 from logger import *
 
-app = FastAPI()
+app = FastAPI(title="Identity and access management (IAM) ",
+    description="Identity and access management",
+    version="1.0.0",
+    )
 
-@app.post("/auth/v1/registeruser")
+@app.post("/auth/v1/registeruser",
+          tags=["Account"],
+          description="Registrar usuarios nuevos en el sistema")
 def register_new_user(item: RegisterItem):
+    '''Registrar un nuevo usuario en db'''
     item_dict = item.dict()
-    print("item_dict")
     log = {
         "user_id": item_dict["username"],
         "action":"register user"
@@ -31,14 +35,17 @@ def register_new_user(item: RegisterItem):
             response = {"code": 401, "details": result["details"]}
             return JSONResponse(content=response, status_code=401)
     except Exception as e:
-        log["details"]= "server internal error"
-        logger.info("server internal error", extra=dict(log))  
+        log["details"]= "server internal error" + e
+        logger.info("server internal error", extra=dict(log))
         response = {"code": 500, "details": "internal server error"}
         return JSONResponse(content=response, status_code=500)
 
 
-@app.post("/auth/v1/authenticate")
+@app.post("/auth/v1/authenticate",
+          tags=["Authenticate"],
+          description="Autenticar consumidor por usuario y contraseña")
 def authenticate_user(item: AuthItem):
+    '''Autenticar usuario'''
     item_dict = item.dict()
     username = item_dict["username"]
     password = item_dict["password"]  
@@ -67,16 +74,14 @@ def authenticate_user(item: AuthItem):
     response = {"code": 500, "details": "servir internal error"}
     return JSONResponse(content=response, status_code=500)
 
-@app.post("/auth/v1/validatetoken")
+@app.post("/auth/v1/validatetoken",
+          tags=["Authenticate"],
+          description="Validar token JWT")
 def validate_token(item: TokenItem):
+    '''Validar token de autenticación'''
     item_dict = item.dict()
     token = item_dict["authorization"] 
     result = verify_token_jwt(token)
-    print("*"*10)
-    print("Token recibido para validar")
-    print(token)
-    print(result)
-    print("*"*10)
     log = {
         "action":"validate token"
     }
@@ -103,6 +108,4 @@ def validate_token(item: TokenItem):
     log["details"]= "server internal error" + " - " + token
     logger.info("server internal error", extra=dict(log))
     response = {"code": 500,  "status":False, "details": "servir internal error"}
-    print(response)
     return JSONResponse(content=response, status_code=500)
-
